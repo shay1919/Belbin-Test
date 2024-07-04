@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        scroll-behavior: smooth;
+    }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 10rem;
+    }
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    button {
+        font-size: xx-large;
+        margin-bottom: 5rem;
+    }
+</style>
+
+<script>
+
+    let tallies = {
+        SH: 0,
+        CO: 0,
+        PL: 0,
+        RI: 0,
+        ME: 0,
+        IMP: 0,
+        TW: 0,
+        CF: 0
+    };
+
+    const roleName = {
+        SH: "Shaper (SH)",
+        CO: "Co-ordinator (CO)",
+        PL: "Plant (PL)",
+        RI: "Resource Investigator (RI)",
+        ME: "Monitor Evaluator (ME)",
+        IMP: "Impementer (IMP)",
+        TW: "Team Worker (TW)",
+        CF: "Complete Finisher (CF)"
+    };
+
+    const roleCharacteristics = {
+        SH: "Highly strung, outgoing, dynamic. Shapers are highly motivated people with a lot of nervous energy and a great need for achievement. Often they seem to be aggressive extroverts with strong drive. Shapers like to challenge, to lead and to push others into action - and to win. If obstacles arise, they will find a way round - but can be headstrong and emotional in response to any form of disappointment or frustration. Shapers can handle and even thrive on confrontation.",
+
+        CO: "Calm, self-confident, controlled. The distinguishing feature of Co-ordinators is their ability to cause others to work to shared goals. Mature, trusting and confident, they delegate readily. In interpersonal relations they are quick to spot individual talents and to use them to pursue group objectives. While Co-ordinators are not necessarily the cleverest members of a team, they have a broad and worldly outlook and generally command respect.",
+
+        PL: "Individualistic, serious-minded, unorthodox. Plants are innovators and inventors and can be highly creative. They provide the seeds and ideas from which major developments spring. Usually they prefer to operate by themselves at some distance from the other members of the team, using their imagination and often working in an unorthodox way. They tend to be introverted and react strongly to criticism and praise. Their ideas may often be radical and may lack practical constraint. They are independent, clever and original and may be weak in communicating with other people on a different wave-length.",
+
+        RI: "Extroverted, enthusiastic, curious, communicative. Resource Investigators are good communicators both inside and outside the organisation. They are natural negotiators, adept at exploring new opportunities and developing contacts. Although not necessarily a great source of original ideas, they are quick to pick up other people’s ideas and build on them. They are skilled at finding out what is available and what can be done, and usually get a warm welcome because of their outgoing nature. Resource Investigators have relaxed personalities with a strong inquisitive sense and a readiness to see the possibilities of anything new. However, unless they remain stimulated by others, their enthusiasm rapidly fades.",
+
+        ME: "Sober, unemotional, prudent. Monitor Evaluators are serious-minded, prudent individuals with a built-in immunity from being over-enthusiastic. They are slow deciders who prefer to think things over - usually with a high critical thinking ability. Good Monitor Evaluators have a capacity for shrewd judgements that take all factors into account and seldom give bad advice.",
+
+        IMP: "Implementers are well organised, enjoy routine, and have a practical common-sense and self-discipline. They favour hard work and tackle problems in a systematic fashion. On a wider front they hold unswerving loyalty to the organisation and are less concerned with the pursuit of self-interest. However, Implementers may find difficulty in coping with new situations.",
+
+        TW: "Socially oriented, rather mild and sensitive. Team Workers are the most supportive members of a team. They are mild, sociable and concerned about others with a great capacity for flexibility and adapting to different situations and people. Team Workers are perceptive and diplomatic. They are good listeners and are generally popular members of a group. They cope less well with pressure or situations involving the need for confrontation.",
+
+        CF: "Painstaking, orderly, conscientious, anxious. Completers, or Completer-Finishers, have a great capacity for follow-through and attention to detail, and seldom start what they cannot finish. They are motivated by internal anxiety, although outwardly they may appear unruffled. Typically, they are introverts who don’t need much external stimulus or incentive. Completer-Finishers dislike carelessness and are intolerant of those with a casual disposition. Reluctant to delegate, they prefer to tackle all tasks themselves."
+    };
+
+    const roleFunction = {
+        SH: "Shapers generally make good managers because they generate action and thrive on pressure. They are excellent at sparking life into a team and are very useful in groups where political complications are apt to slow things down. Shapers are inclined to rise above problems of this kind and forge ahead regardless. They like making necessary changes and do not mind taking unpopular decisions. As the name implies, they try to impose some shape and pattern on group discussion or activities. They are probably the most effective members of a team in guaranteeing positive action.",
+
+        CO: "Co-ordinators are useful people to have in charge of a team with diverse skills and personal characteristics. They perform better in dealing with colleagues of near or equal rank than in directing junior subordinates. Their motto might well be 'consultation with control' and they usually believe in tackling problems calmly. In some organisations, Co-ordinators are inclined to clash with Shapers due to their contrasting management styles.",
+
+        PL: "The main use of a Plant is to generate new proposals and to solve complex problems. Plants are often needed in the initial stages of a project or when a project is failing to progress. Plants have often made their marks as founders of companies or as originators of new products. Too many Plants in one organisation, however, may be counter-productive as they tend to spend their time reinforcing their own ideas and engaging each other in combat.",
+
+        RI: "Resource Investigators are quick to open up and exploit opportunities. They have an ability to think on their feet and to probe others for information. They are the best people to set up external contacts, to search for resources outside the group, and to carry out any negotiations that may be involved.",
+
+        ME: "Monitor Evaluators are at home when analysing problems and evaluating ideas and suggestions. They are very good at weighing up the pro’s and con’s of options and to outsiders seem dry, boring or even over-critical. Some people are surprised that they become managers. Nevertheless, many Monitor Evaluators occupy key planning and strategic posts and thrive in high-level appointments where a relatively small number of decisions carry major consequences.",
+
+        IMP: "Implementers are useful because of their reliability and capacity for application. They succeed because they have a sense of what is feasible and relevant. It is said that many executives only do the jobs they wish to do and neglect those tasks which they find distasteful. By contrast, Implementers will do what needs to be done. Good Implementers often progress to high management positions by virtue of good organisational skills and efficiency in dealing with all necessary work.",
+
+        TW: "The role of the Team Worker is to prevent interpersonal problems within a team and allow everyone to contribute effectively. Since they don’t like friction, they will go to great lengths to avoid it. The diplomatic and perceptive skills of a Team Worker become real assets, especially under a managerial regime where conflicts are liable to arise or to be artificially suppressed. Team Worker managers are seen as a threat to no one and therefore can be elected as the most accepted and favoured people to serve under. Team Workers have a lubricating effect on teams. Morale is better and people seem to co-operate better when they are around.",
+
+        CF: "Completer-Finishers are invaluable where tasks demand close concentration and a high degree of accuracy. They foster a sense of urgency within a team and are good at meeting schedules. In management, they excel by the high standards to which they aspire, and by their concern for precision, attention to detail and follow-through."
+    };
+
+    const roleStrengths = {
+        SH: "Drive and a readiness to challenge inertia, ineffectiveness, complacency or self-deception.",
+        CO: "Welcome all potential contributors on their merits and without prejudice, but without ever losing sight of the main objective.",
+        PL: "Genius, imagination, intellect, knowledge.",
+        RI: "A capacity for finding useful people and promising ideas or opportunities, and a general source of vitality.",
+        ME: "Judgement, discretion, hard-headedness.",
+        IMP: "Organising ability, practical common sense, hard working, self-discipline.",
+        TW: "Ability to respond to people and situations and to promote team spirit.",
+        CF: "A capacity for fulfilling their promises and working to the highest standards."
+    };
+
+    const roleWeaknesses = {
+        SH: "Prone to provocation, irritation and impatience, and a tendency to offend others.",
+        CO: "No pretensions as regards intellectual or creative ability.",
+        PL: "Up in the clouds, inclined to disregard practical details or protocol.",
+        RI: "Liable to lose interest once the initial fascination has passed.",
+        ME: "Lack of inspiration or the ability to motivate others.",
+        IMP: "Lack of flexibility, resistance to unproven ideas.",
+        TW: "Indecision at moments of crisis and some failure to provide a clear lead to others.",
+        CF: "A tendency to worry about small things and a reluctance to 'let go'."
+    };
+
+    calculateResult = function () {
+
+        const checkboxes = document.querySelectorAll('.check');
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                let textField = checkbox.closest('tr').querySelector('input[type="text"]');
+                let textFieldClass = textField.className;
+                let textFieldValue = parseInt(textField.value);
+
+                tallies[textFieldClass] += textFieldValue;
+                console.log(textFieldClass, tallies[textFieldClass]);
+            }
+        });
+
+        let entries = Object.entries(tallies);
+        entries.sort((a, b) => b[1] - a[1]);
+        let highestScore = entries[0][0];
+        let secondHighestScore = entries[1][0];
+
+        let resultMessage = `
+        <h2>Your best role is: ${roleName[highestScore]}</h2>
+        <br><br>
+        <h3>Characteristics:</h3>
+        <p>${roleCharacteristics[highestScore]}</p>
+        <br><br>
+        <h3>Function:</h3>
+        <p>${roleFunction[highestScore]}</p>
+        <br><br>
+        <h3>Strengths:</h3>
+        <p>${roleStrengths[highestScore]}</p>
+        <br><br>
+        <h3>Weaknesses:</h3>
+        <p>${roleWeaknesses[highestScore]}</p>
+        <br><br>
+        <h2>Your second best role is: ${roleName[secondHighestScore]}</h2>
+        <br><br>
+        <h3>Characteristics:</h3>
+        <p>${roleCharacteristics[secondHighestScore]}</p>
+        <br><br>
+        <h3>Function:</h3>
+        <p>${roleFunction[secondHighestScore]}</p>
+        <br><br>
+        <h3>Strengths:</h3>
+        <p>${roleStrengths[secondHighestScore]}</p>
+        <br><br>
+        <h3>Weaknesses:</h3>
+        <p>${roleWeaknesses[secondHighestScore]}</p>
+    `;
+        document.getElementById("result").innerHTML = resultMessage;
+    };
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belbin Test</title>
+</head>
+
+<body>
+
+    <h1>Section A</h1>
+    <h2>WHEN INVOLVED IN A PROJECT WITH OTHER PEOPLE:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can be relied upon to see that work that needs to be done is organised.</td>
+            <td><input type="text" id="sectionA_question1" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I pick up slips and omissions that others fail to notice.</td>
+            <td><input type="text" id="sectionA_question2" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check3"></td>
+            <td>I react strongly when meetings look like losing track of the main objective.</td>
+            <td><input type="text" id="sectionA_question3" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I produce original suggestions.</td>
+            <td><input type="text" id="sectionA_question4" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I analyse other people’s ideas objectively, for both merits and failings.</td>
+            <td><input type="text" id="sectionA_question5" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am keen to find out the latest ideas and developments.</td>
+            <td><input type="text" id="sectionA_question6" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I have an aptitude for organising people.</td>
+            <td><input type="text" id="sectionA_question7" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am always ready to support good suggestions that help to resolve a problem.</td>
+            <td><input type="text" id="sectionA_question8" class="TW"></td>
+        </tr>
+    </table>
+
+    <h1>Section B</h1>
+    <h2>IN SEEKING SATISFACTION THROUGH MY WORK:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I like to have a strong influence on decisions.</td>
+            <td><input type="text" id="sectionB_question1" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I feel in my element where work requires a high degree of attention and
+                concentration.</td>
+            <td><input type="text" id="sectionB_question2" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am concerned to help colleagues with their problems.</td>
+            <td><input type="text" id="sectionB_question3" class="TW"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I like to make critical discrimination between alternatives.</td>
+            <td><input type="text" id="sectionB_question4" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I tend to have a creative approach to problem solving.</td>
+            <td><input type="text" id="sectionB_question5" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I enjoy reconciling different points of view.</td>
+            <td><input type="text" id="sectionB_question6" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am more interested in practicalities than new ideas.</td>
+            <td><input type="text" id="sectionB_question7" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I particularly enjoy exploring different views and techniques.</td>
+            <td><input type="text" id="sectionB_question8" class="RI"></td>
+        </tr>
+    </table>
+
+    <h1>Section C</h1>
+    <h2>WHEN THE TEAM IS TRYING TO SOLVE A PARTICULARLY COMPLEX PROBLEM:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I keep a watching eye on areas where difficulty may arise.</td>
+            <td><input type="text" id="sectionC_question1" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I explore ideas that may have a wider application than in the immediate task.</td>
+            <td><input type="text" id="sectionC_question2" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I like to weigh up and evaluate a range of suggestions thoroughly before choosing.</td>
+            <td><input type="text" id="sectionC_question3" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can co-ordinate and use productively other people’s abilities and talents.</td>
+            <td><input type="text" id="sectionC_question4" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I maintain a steady systematic approach, whatever the pressures.</td>
+            <td><input type="text" id="sectionC_question5" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I often produce a new approach to a long continuing problem.</td>
+            <td><input type="text" id="sectionC_question6" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am ready to make my personal views known in a forceful way if necessary.</td>
+            <td><input type="text" id="sectionC_question7" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am ready to help whenever I can.</td>
+            <td><input type="text" id="sectionC_question8" class="TW"></td>
+        </tr>
+    </table>
+
+    <h1>Section D</h1>
+    <h2>IN CARRYING OUT MY DAY-TO-DAY WORK:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am keen to see there is nothing vague about my task and objectives.</td>
+            <td><input type="text" id="sectionD_question1" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am not reluctant to emphasise my own point of view in meetings.</td>
+            <td><input type="text" id="sectionD_question2" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can work with all sorts of people provided that they have got something worthwhile
+                to contribute.</td>
+            <td><input type="text" id="sectionD_question3" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I make a point of following up interesting ideas and/or people.</td>
+            <td><input type="text" id="sectionD_question4" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can usually find the argument to refute unsound propositions.</td>
+            <td><input type="text" id="sectionD_question5" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I tend to see patterns where others would see items as unconnected.</td>
+            <td><input type="text" id="sectionD_question6" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>Being busy gives me real satisfaction.</td>
+            <td><input type="text" id="sectionD_question7" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I have a quiet interest in getting to know people better.</td>
+            <td><input type="text" id="sectionD_question8" class="TW"></td>
+        </tr>
+    </table>
+
+    <h1>Section E</h1>
+    <h2>IF I AM SUDDENLY GIVEN A DIFFICULT TASK WITH LIMITED TIME AND UNFAMILIAR PEOPLE:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I often find my imagination frustrated by working in a group.</td>
+            <td><input type="text" id="sectionE_question1" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I find my personal skill particularly appropriate in achieving agreement.</td>
+            <td><input type="text" id="sectionE_question2" class="TW"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>My feelings seldom interfere with my judgement.</td>
+            <td><input type="text" id="sectionE_question3" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>My feelings seldom interfere with my judgement.</td>
+            <td><input type="text" id="sectionE_question4" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can work with people who vary widely in their personal qualities and outlook.</td>
+            <td><input type="text" id="sectionE_question5" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I feel it is sometimes worth incurring some temporary unpopularity if one is to
+                succeed in getting one’s views across in a group.</td>
+            <td><input type="text" id="sectionE_question6" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I usually know someone whose specialist knowledge is particularly apt.</td>
+            <td><input type="text" id="sectionE_question7" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I seem to develop a natural sense of urgency.</td>
+            <td><input type="text" id="sectionE_question8" class="CF"></td>
+        </tr>
+    </table>
+
+    <h1>Section F</h1>
+    <h2>WHEN SUDDENLY ASKED TO CONSIDER A NEW PROJECT:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I start to look around for possible ideas and openings.</td>
+            <td><input type="text" id="sectionF_question1" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am concerned to finish and perfect current work before I start.</td>
+            <td><input type="text" id="sectionF_question2" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I approach the problem in a carefully analytical way.</td>
+            <td><input type="text" id="sectionF_question3" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am able to assert myself to get other people involved if necessary.</td>
+            <td><input type="text" id="sectionF_question4" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am able to take an independent and innovative look at most situations.</td>
+            <td><input type="text" id="sectionF_question5" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I am happy to take the lead when action is required.</td>
+            <td><input type="text" id="sectionF_question6" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can respond positively to my colleagues and their initiatives.</td>
+            <td><input type="text" id="sectionF_question7" class="TW"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I find it hard to give in a job where the goals are not clearly defined.</td>
+            <td><input type="text" id="sectionF_question8" class="IMP"></td>
+        </tr>
+    </table>
+
+    <h1>Section G</h1>
+    <h2>IN CONTRIBUTING TO GROUP PROJECTS IN GENERAL:</h2>
+    <table>
+        <tr>
+            <th>Check</th>
+            <th>Question</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I think I have a talent for sorting out the concrete steps that need to be taken given a
+                broad brief.</td>
+            <td><input type="text" id="sectionG_question1" class="IMP"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>My considered judgement may take time but is usually near the mark.</td>
+            <td><input type="text" id="sectionG_question2" class="ME"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>A broad range of personal contacts is important to my style of working.</td>
+            <td><input type="text" id="sectionG_question3" class="RI"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I have an eye for getting the details right.</td>
+            <td><input type="text" id="sectionG_question4" class="CF"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I try to make my mark in group meetings.</td>
+            <td><input type="text" id="sectionG_question5" class="SH"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I can see how ideas and techniques can be used in new relationships.</td>
+            <td><input type="text" id="sectionG_question6" class="PL"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I see both sides of a problem and take a decision acceptable to all.</td>
+            <td><input type="text" id="sectionG_question7" class="CO"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="check"></td>
+            <td>I get on well with others and work hard for the team.</td>
+            <td><input type="text" id="sectionG_question8" class="TW"></td>
+        </tr>
+    </table>
+
+    <a href="#result"><button id="submit" onclick="calculateResult()">Calculate Result</button></a>
+
+    <div id="result"></div>
+</body>
+
+</html>
